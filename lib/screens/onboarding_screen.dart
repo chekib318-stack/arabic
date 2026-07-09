@@ -35,6 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     }
+  }
 
   @override
   Widget build(BuildContext context) {
