@@ -24,15 +24,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   static const _tongues = ['العربية', 'الفرنسية', 'الإنجليزية', 'أخرى'];
 
   void _next() {
-    if (_step == 0 && _ageGroup == null) return;
-    if (_step == 1 && _motherTongue == null) {
+    if (_step == 0) {
+      if (_ageGroup == null) return;
+      setState(() => _step++);
+      return;
+    }
+    if (_step == 1) {
+      if (_motherTongue == null) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
-      return;
     }
-    setState(() => _step++);
-  }
 
   @override
   Widget build(BuildContext context) {
