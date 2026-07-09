@@ -1,0 +1,34 @@
+workflows:
+  android-workflow:
+    name: Arabia Edu - Android APK
+    max_build_duration: 60
+    # ملاحظة: اترك instance_type غير محدد إذا واجهتك قيود الفوترة سابقا
+    # (نفس مشكلة ExamGuard) — Codemagic يختار افتراضيا حسب خطتك.
+    # instance_type: linux_x2
+    environment:
+      flutter: stable
+      groups:
+        - keystore_credentials  # يُنشأ لاحقا عند تفعيل التوقيع للنشر على المتجر
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Analyze (تحقق مبكر من أخطاء الكود)
+        script: flutter analyze || true
+      - name: Build APK (release)
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/**/*.apk
+      - build/app/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - chekib318@gmail.com
+        notify:
+          success: true
+          failure: true
