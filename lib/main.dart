@@ -23,10 +23,9 @@ class ArabiaEduApp extends StatelessWidget {
         // الكاملة لدعم تعدد لغات الواجهة في مرحلة لاحقة
         locale: const Locale('ar'),
         supportedLocales: const [Locale('ar'), Locale('en'), Locale('fr')],
-        localizationsDelegates: const [
+        localizationsDelegates: [
           DefaultMaterialLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
         ],
         builder: (context, child) => Directionality(
           textDirection: TextDirection.rtl,
