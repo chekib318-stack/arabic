@@ -1,0 +1,37 @@
+workflows:
+  android-workflow:
+    name: Arabia Edu - Android APK
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: توليد مجلد android/ تلقائيا إذا كان ناقصا
+        script: |
+          if [ ! -f "android/app/build.gradle" ]; then
+            echo "android/ غير موجود — يتم توليده الآن عبر flutter create"
+            flutter create . --platforms=android --org tn.gov.education --project-name arabia_edu
+          else
+            echo "android/ موجود مسبقا، تخطي التوليد"
+          fi
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Analyze
+        script: flutter analyze || true
+      - name: Build APK (release)
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/**/*.apk
+      - build/app/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - chekib318@gmail.com
+        notify:
+          success: true
+          failure: true
