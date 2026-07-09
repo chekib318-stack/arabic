@@ -19,6 +19,11 @@ workflows:
           else
             echo "android/ موجود مسبقا، تخطي التوليد"
           fi
+      - name: تصحيح اسم التطبيق الظاهر تحت الأيقونة (launcher label)
+        script: |
+          sed -i 's/android:label="[^"]*"/android:label="تعليم العربية - تحضيري"/' \
+            android/app/src/main/AndroidManifest.xml
+          grep android:label android/app/src/main/AndroidManifest.xml
       - name: Get Flutter packages
         script: flutter pub get
       - name: Analyze

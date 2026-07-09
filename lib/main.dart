@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/progress_provider.dart';
-import 'screens/onboarding_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class ArabiaEduApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => ProgressProvider()..load(),
       child: MaterialApp(
-        title: 'العربية معي',
+        title: 'تعليم اللغة العربية لأبناء الجالية التونسية بالخارج - القسم التحضيري',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         // دعم الاتجاه من اليمين إلى اليسار، بانتظار إضافة حزمة intl
@@ -31,7 +31,7 @@ class ArabiaEduApp extends StatelessWidget {
           textDirection: TextDirection.rtl,
           child: child ?? const SizedBox.shrink(),
         ),
-        home: const OnboardingScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/exercise.dart';
+import '../services/audio_service.dart';
 import '../theme/app_theme.dart';
+import 'wrong_answer_screen.dart';
 
 /// عارض تمرين واحد. يدير الاختيار الداخلي ثم يعرض تغذية راجعة فورية
 /// (صحيح/خطأ) قبل استدعاء [onComplete] للانتقال إلى التمرين التالي.
@@ -27,6 +29,17 @@ class _ExerciseViewState extends State<ExerciseView> {
   bool _revealedAudio = false; // listenChoose: هل ضغط على زر الاستماع
   bool? _isCorrect; // null = لم يتحقق بعد
   bool _checked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.exercise.type == ExerciseType.listenChoose) {
+      // تشغيل تلقائي عند فتح التمرين، مع إمكانية إعادة الاستماع بالضغط
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AudioService.instance.speak(widget.exercise.targetWord ?? '');
+      });
+    }
+  }
 
   bool get _canCheck {
     switch (widget.exercise.type) {
@@ -60,6 +73,19 @@ class _ExerciseViewState extends State<ExerciseView> {
       _isCorrect = correct;
       _checked = true;
     });
+
+    if (!correct) {
+      // نعرض شاشة كاملة تثبّت الإجابة الصحيحة، وننتقل للتمرين التالي
+      // فقط بعد ما يضغط المتعلم "متابعة" ويرجع منها.
+      Navigator.of(context)
+          .push(
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (_) => WrongAnswerScreen(exercise: widget.exercise),
+            ),
+          )
+          .then((_) => widget.onComplete(false));
+    }
   }
 
   @override
@@ -67,10 +93,26 @@ class _ExerciseViewState extends State<ExerciseView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.exercise.prompt,
-          style: Theme.of(context).textTheme.headlineMedium,
-          textAlign: TextAlign.center,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                widget.exercise.prompt,
+                style: Theme.of(context).textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            if (widget.exercise.targetWord != null &&
+                widget.exercise.type != ExerciseType.listenChoose) ...[
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: () =>
+                    AudioService.instance.speak(widget.exercise.targetWord!),
+                icon: const Icon(Icons.volume_up_rounded, color: AppColors.sidiBlue),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 28),
         Expanded(child: _buildBody()),
@@ -181,7 +223,10 @@ class _ExerciseViewState extends State<ExerciseView> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () => setState(() => _revealedAudio = true),
+          onTap: () {
+            setState(() => _revealedAudio = true);
+            AudioService.instance.speak(widget.exercise.targetWord ?? '');
+          },
           child: Container(
             width: 90,
             height: 90,

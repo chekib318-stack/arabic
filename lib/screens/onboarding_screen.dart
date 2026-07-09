@@ -53,7 +53,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                'العربية معي 🌙',
+                'تعليم العربية — تحضيري 🌙',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       color: AppColors.sidiBlue,

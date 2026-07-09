@@ -22,6 +22,7 @@ class LearningUnit {
   final String id;
   final String title;
   final String description;
+  final String gradeLevel; // مثال: 'تحضيري', 'سنة 1', ... 'سنة 6'
   final List<Lesson> lessons;
 
   const LearningUnit({
@@ -29,5 +30,6 @@ class LearningUnit {
     required this.title,
     required this.description,
     required this.lessons,
+    this.gradeLevel = 'تحضيري',
   });
 }
