@@ -21,17 +21,26 @@ workflows:
           fi
       - name: تصحيح اسم التطبيق الظاهر تحت الأيقونة (launcher label)
         script: |
-          sed -i 's/android:label="[^"]*"/android:label="تعليم العربية - تحضيري"/' \
+          sed -i.bak 's/android:label="[^"]*"/android:label="تعليم العربية - تحضيري"/' \
             android/app/src/main/AndroidManifest.xml
+          rm -f android/app/src/main/AndroidManifest.xml.bak
       - name: إضافة صلاحية الميكروفون للتعرف على الكلام
         script: |
           MANIFEST=android/app/src/main/AndroidManifest.xml
           if ! grep -q "RECORD_AUDIO" "$MANIFEST"; then
-            sed -i '0,/<manifest[^>]*>/s//&\n    <uses-permission android:name="android.permission.RECORD_AUDIO" \/>\n    <uses-permission android:name="android.permission.INTERNET" \/>/' "$MANIFEST"
+            sed -i.bak '0,/<manifest[^>]*>/s//&\
+    <uses-permission android:name="android.permission.RECORD_AUDIO" \/>\
+    <uses-permission android:name="android.permission.INTERNET" \/>/' "$MANIFEST"
           fi
           if ! grep -q "RECOGNITION_SERVICE" "$MANIFEST"; then
-            sed -i '0,/<\/application>/s//&\n    <queries>\n        <intent>\n            <action android:name="android.speech.RecognitionService" \/>\n        <\/intent>\n    <\/queries>/' "$MANIFEST"
+            sed -i.bak '0,/<\/application>/s//&\
+    <queries>\
+        <intent>\
+            <action android:name="android.speech.RecognitionService" \/>\
+        <\/intent>\
+    <\/queries>/' "$MANIFEST"
           fi
+          rm -f "$MANIFEST.bak"
           cat "$MANIFEST"
       - name: Get Flutter packages
         script: flutter pub get
