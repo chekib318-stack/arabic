@@ -24,6 +24,7 @@ class AudioService {
     await _tts.setLanguage('ar');
     await _tts.setSpeechRate(0.42); // أبطأ قليلا لملاءمة المتعلمين الصغار
     await _tts.setPitch(1.0);
+    await _tts.awaitSpeakCompletion(true); // ينتظر speak() حتى ينتهي النطق فعليا
     _ready = true;
   }
 

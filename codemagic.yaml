@@ -23,7 +23,16 @@ workflows:
         script: |
           sed -i 's/android:label="[^"]*"/android:label="تعليم العربية - تحضيري"/' \
             android/app/src/main/AndroidManifest.xml
-          grep android:label android/app/src/main/AndroidManifest.xml
+      - name: إضافة صلاحية الميكروفون للتعرف على الكلام
+        script: |
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          if ! grep -q "RECORD_AUDIO" "$MANIFEST"; then
+            sed -i '0,/<manifest[^>]*>/s//&\n    <uses-permission android:name="android.permission.RECORD_AUDIO" \/>\n    <uses-permission android:name="android.permission.INTERNET" \/>/' "$MANIFEST"
+          fi
+          if ! grep -q "RECOGNITION_SERVICE" "$MANIFEST"; then
+            sed -i '0,/<\/application>/s//&\n    <queries>\n        <intent>\n            <action android:name="android.speech.RecognitionService" \/>\n        <\/intent>\n    <\/queries>/' "$MANIFEST"
+          fi
+          cat "$MANIFEST"
       - name: Get Flutter packages
         script: flutter pub get
       - name: Analyze

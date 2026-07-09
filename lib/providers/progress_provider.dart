@@ -9,22 +9,32 @@ class ProgressProvider extends ChangeNotifier {
   int streakDays = 0;
   DateTime? lastActivityDate;
   final Set<String> completedLessonIds = {};
+  String studentName = '';
 
   static const _keyXp = 'xp';
   static const _keyStreak = 'streak';
   static const _keyLastActivity = 'last_activity';
   static const _keyCompleted = 'completed_lessons';
+  static const _keyStudentName = 'student_name';
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     xp = prefs.getInt(_keyXp) ?? 0;
     streakDays = prefs.getInt(_keyStreak) ?? 0;
+    studentName = prefs.getString(_keyStudentName) ?? '';
     final lastActivityStr = prefs.getString(_keyLastActivity);
     lastActivityDate =
         lastActivityStr != null ? DateTime.tryParse(lastActivityStr) : null;
     completedLessonIds
       ..clear()
       ..addAll(prefs.getStringList(_keyCompleted) ?? []);
+    notifyListeners();
+  }
+
+  Future<void> setStudentName(String name) async {
+    studentName = name.trim();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyStudentName, studentName);
     notifyListeners();
   }
 

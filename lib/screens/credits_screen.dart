@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import 'onboarding_screen.dart';
+import 'welcome_name_screen.dart';
 
 /// شاشة تعريفية قصيرة بمطوّر التطبيق، تُعرض مرة واحدة بعد شاشة الترحيب
 /// الرسمية وقبل الدخول لتحديد الفئة العمرية.
@@ -15,13 +15,13 @@ class _CreditsScreenState extends State<CreditsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), _goNext);
+    Future.delayed(const Duration(seconds: 7), _goNext);
   }
 
   void _goNext() {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+      MaterialPageRoute(builder: (_) => const WelcomeNameScreen()),
     );
   }
 

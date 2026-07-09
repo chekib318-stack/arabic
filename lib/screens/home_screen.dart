@@ -54,6 +54,15 @@ class HomeScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           children: [
+            if (progress.studentName.isNotEmpty) ...[
+              Text(
+                'مرحبا ${progress.studentName} 👋',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.sidiBlue,
+                    ),
+              ),
+              const SizedBox(height: 16),
+            ],
             for (final unit in kindergartenUnits) ...[
               Container(
                 padding: const EdgeInsets.all(18),
