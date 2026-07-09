@@ -5,6 +5,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 /// الملفات الصوتية يدويا في نسخة البداية، ويشتغل تلقائيا لأي كلمة جديدة
 /// تُضاف للمحتوى دون أي عمل إضافي.
 ///
+/// ملاحظة: يستعمل عربية فصحى (locale 'ar') بشكل ثابت — لا محاولة للهجات
+/// محلية، بناء على طلب صريح بإبقاء النطق فصيحا وواضحا.
+///
 /// خارطة الطريق: في مرحلة لاحقة، حين تتوفر تسجيلات حقيقية بصوت بشري
 /// (مرفوعة على خادم PHP)، تُستبدل مكالمة [speak] بمنطق:
 ///   1. تحقق هل توجد ملف صوتي حقيقي لهذه الكلمة على الخادم/محليا
@@ -20,10 +23,13 @@ class AudioService {
   final FlutterTts _tts = FlutterTts();
   bool _ready = false;
 
+  static const double _defaultPitch = 1.0;
+  static const double _defaultRate = 0.42;
+
   Future<void> _init() async {
-    await _tts.setLanguage('ar');
-    await _tts.setSpeechRate(0.42); // أبطأ قليلا لملاءمة المتعلمين الصغار
-    await _tts.setPitch(1.0);
+    await _tts.setLanguage('ar'); // عربية فصحى، بدون محاولة لهجات محلية
+    await _tts.setSpeechRate(_defaultRate); // أبطأ قليلا لملاءمة المتعلمين الصغار
+    await _tts.setPitch(_defaultPitch);
     await _tts.awaitSpeakCompletion(true); // ينتظر speak() حتى ينتهي النطق فعليا
     _ready = true;
   }
@@ -34,6 +40,27 @@ class AudioService {
     if (!_ready) await _init();
     await _tts.stop();
     await _tts.speak(text);
+  }
+
+  /// تعليق تحفيزي عند الإجابة الصحيحة، بنبرة مرحة أعلى قليلا من المعتاد.
+  Future<void> speakCorrect() async {
+    if (!_ready) await _init();
+    await _tts.stop();
+    await _tts.setPitch(1.15);
+    await _tts.speak('أحسنت، برافو عليك');
+    await _tts.setPitch(_defaultPitch);
+  }
+
+  /// تعليق عند الإجابة الخاطئة، بنبرة أهدأ وأبطأ قليلا (نغمة حزينة لطيفة)
+  /// دون أن تكون محبطة للمتعلم الصغير.
+  Future<void> speakWrong() async {
+    if (!_ready) await _init();
+    await _tts.stop();
+    await _tts.setPitch(0.82);
+    await _tts.setSpeechRate(0.36);
+    await _tts.speak('خطأ، حاول مرة أخرى');
+    await _tts.setPitch(_defaultPitch);
+    await _tts.setSpeechRate(_defaultRate);
   }
 
   Future<void> stop() => _tts.stop();

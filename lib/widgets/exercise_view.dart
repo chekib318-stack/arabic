@@ -33,11 +33,25 @@ class _ExerciseViewState extends State<ExerciseView> {
   @override
   void initState() {
     super.initState();
-    if (widget.exercise.type == ExerciseType.listenChoose) {
-      // تشغيل تلقائي عند فتح التمرين، مع إمكانية إعادة الاستماع بالضغط
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        AudioService.instance.speak(widget.exercise.targetWord ?? '');
-      });
+    // قراءة السؤال صوتيا تلقائيا عند ظهور أي تمرين (كل الأنواع، وليس فقط
+    // "استماع واختر")، مع إمكانية إعادة الاستماع لاحقا عبر زر 🔊 أو
+    // بالضغط على زر الميكروفون حسب نوع التمرين.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _speakPrompt());
+  }
+
+  Future<void> _speakPrompt() async {
+    switch (widget.exercise.type) {
+      case ExerciseType.listenChoose:
+      case ExerciseType.chooseImage:
+        await AudioService.instance.speak(
+          widget.exercise.targetWord ?? widget.exercise.prompt,
+        );
+        break;
+      case ExerciseType.fillBlank:
+      case ExerciseType.arrangeWords:
+      case ExerciseType.matchPairs:
+        await AudioService.instance.speak(widget.exercise.prompt);
+        break;
     }
   }
 
@@ -74,7 +88,10 @@ class _ExerciseViewState extends State<ExerciseView> {
       _checked = true;
     });
 
-    if (!correct) {
+    if (correct) {
+      AudioService.instance.speakCorrect();
+    } else {
+      AudioService.instance.speakWrong();
       // نعرض شاشة كاملة تثبّت الإجابة الصحيحة، وننتقل للتمرين التالي
       // فقط بعد ما يضغط المتعلم "متابعة" ويرجع منها.
       Navigator.of(context)
